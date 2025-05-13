@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AmbuGo – Início</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <main class="landing">
+        <h1>AmbuGo</h1>
+        <p>Por favor, identifique-se:</p>
+        <div class="choice-buttons">
+            <button id="btn-vitima">Sou Vítima</button>
+            <button id="btn-socorrista">Sou Socorrista</button>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('btn-vitima')
+            .addEventListener('click', () => location.href = 'solicitar.html');
+        document.getElementById('btn-socorrista')
+            .addEventListener('click', () => location.href = 'socorrista.html');
+    </script>
+</body>
+
+</html>

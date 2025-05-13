@@ -1,78 +1,271 @@
-/* style.css */
+/* 1. Import de fontes */
 
-body {
-    font-family: Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:400,600&family=Playfair+Display:700&family=Pacifico&display=swap');
+:root {
+    --color-primary: #002147;
+    --color-secondary: #e53935;
+    --color-accent: #ffeb3b;
+    --bg: #f0f4f8;
+    --text: #333;
+}
+
+
+/* Reset */
+
+* {
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    box-sizing: border-box
 }
 
-header {
-    background-color: #d32f2f;
-    color: white;
-    padding: 1rem;
-    text-align: center;
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
 }
 
-nav ul {
+
+/* === HEADER === */
+
+.main-header {
+    background: var(--color-primary);
+    padding: 1rem 2rem;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-img {
+    height: 100px;
+    width: auto;
+}
+
+.logo-textos {
+    display: flex;
+    flex-direction: column;
+    line-height: 1
+}
+
+.logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #fff;
+}
+
+.logo-tagline {
+    font-family: 'Pacifico', cursive;
+    color: var(--color-accent);
+    font-size: 1rem;
+}
+
+.main-header nav ul {
+    display: flex;
+    gap: 1.5rem;
     list-style: none;
-    padding: 0;
-    margin: 1rem 0 0;
-    flex-wrap: wrap;
 }
 
-nav li {
-    margin: 0 1rem;
-}
-
-nav a {
-    color: white;
+.main-header nav a {
+    color: #fff;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
 }
+
+.main-header nav a:hover {
+    text-decoration: underline;
+}
+
+
+/* === HERO (index.html) === */
+
+.hero {
+    text-align: center;
+    margin: 2rem 0
+}
+
+.hero-heart {
+    width: 200px;
+    max-width: 50%;
+    height: auto
+}
+
+
+/* === CONTEÚDO === */
 
 main {
-    padding: 2rem;
-    text-align: center;
+    padding: 2rem
 }
 
-.apresentacao h2 {
-    color: #d32f2f;
+
+/* === INFO BOX === */
+
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
 }
 
-button {
-    background-color: #d32f2f;
-    color: white;
+.info-box img {
+    width: 50px;
+    height: 50px;
+}
+
+
+/* === BOTÕES === */
+
+button,
+.botao-localizar,
+#chatEnviar,
+#salvarPerfil {
+    background: var(--color-secondary);
+    color: #fff;
     border: none;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    cursor: pointer;
+    padding: 0.8rem 1.5rem;
     border-radius: 5px;
-    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 2rem;
+    /* espaçamento abaixo de cada botão */
 }
 
-button:hover {
-    background-color: #b71c1c;
+button:hover,
+.botao-localizar:hover,
+#chatEnviar:hover,
+#salvarPerfil:hover {
+    background: #d32f2c;
 }
+
+
+/* === FORMULÁRIOS === */
+
+input,
+textarea {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+
+/* === FORMULÁRIO SOCORRISTA === */
+
+.form-socorrista {
+    max-width: 400px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-socorrista label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.form-socorrista input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-socorrista button {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+
+/* === RESULTADO === */
+
+#resultado {
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 2rem;
+    display: none;
+    text-align: left;
+}
+
+#resultado span {
+    font-weight: bold
+}
+
+
+/* === MAPA === */
+
+#map {
+    height: 400px;
+    margin-top: 2rem;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+}
+
+
+/* === RODAPÉ === */
 
 footer {
-    background-color: #222;
-    color: white;
+    background: #222;
+    color: #fff;
     text-align: center;
     padding: 1rem;
     margin-top: 2rem;
 }
 
-@media (max-width: 600px) {
-    nav ul {
+
+/* === RESPONSIVO === */
+
+@media(max-width:768px) {
+    .main-header {
         flex-direction: column;
+        align-items: flex-start;
     }
-    nav li {
-        margin: 0.5rem 0;
+    .main-header nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
     }
-    button {
-        width: 100%;
+    /* === LANDING PAGE === */
+    .landing {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: var(--bg);
+        text-align: center;
+    }
+    .landing h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    .choice-buttons button {
+        margin: 0.5rem;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        background: var(--color-secondary);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .choice-buttons button:hover {
+        background: #d32f2c;
     }
 }

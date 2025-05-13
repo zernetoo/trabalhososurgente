@@ -2,30 +2,67 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Ambulância</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AmbuGo – Solicitar Ambulância</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
 <body>
-    <header>
-        <h1>SOS Urgente</h1>
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="assets/ambugo-logo.png" alt="AmbuGo" class="logo-img" />
+            <div class="logo-textos">
+                <h1 class="logo-title">AmbuGo</h1>
+                <p class="logo-tagline">Solução inovadora para emergências</p>
+            </div>
+        </div>
         <nav>
             <ul>
                 <li><a href="index.html">Início</a></li>
                 <li><a href="servicos.html">Serviços</a></li>
                 <li><a href="sobre.html">Sobre</a></li>
-                <li><a href="solicitar.html">Solicitar Ambulância</a></li>
+                <li><a href="solicitar.html" class="active">Solicitar Ambulância</a></li>
             </ul>
         </nav>
     </header>
+
     <main>
-        <p>Esta é a página para solicitação de ambulâncias com geolocalização.</p>
+        <h2>Solicitar Ambulância</h2>
+
+        <form id="formSolicitacao">
+            <label for="cpfVitima">CPF*:</label>
+            <input type="text" id="cpfVitima" name="cpfVitima" placeholder="000.000.000-00" required />
+
+            <label for="nome">Nome*:</label>
+            <input type="text" id="nome" name="nome" required />
+
+            <label for="telefone">Telefone:</label>
+            <input type="tel" id="telefone" name="telefone" />
+
+            <label for="localizacao">Localização:</label>
+            <input type="text" id="localizacao" name="localizacao" readonly />
+
+            <label for="observacoes">Observações:</label>
+            <textarea id="observacoes" name="observacoes"></textarea>
+
+            <div class="form-buttons">
+                <button type="button" class="botao-localizar" onclick="atualizarLocalizacao()">📍 Atualizar Localização</button>
+                <button type="submit">Enviar Solicitação</button>
+            </div>
+        </form>
+
+        <div id="resultado"></div>
+        <div id="map"></div>
     </main>
+
     <footer>
-        <p>&copy; 2025 SOS Urgente. Todos os direitos reservados.</p>
+        <p>&copy; 2025 AmbuGo. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

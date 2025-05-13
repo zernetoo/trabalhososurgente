@@ -2,114 +2,70 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS Urgente - Solicitar Ambulância</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- 1) Metadados -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 2) Título da página -->
+    <title>AmbuGo – Chamar Ambulância</title>
+
+    <!-- 3) Fontes externas (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:400,600&family=Playfair+Display:700&family=Pacifico&display=swap" rel="stylesheet" />
+
+    <!-- 4) CSS do Leaflet e Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        #resultado {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-top: 2rem;
-            display: none;
-            text-align: left;
-        }
-        
-        #resultado span {
-            font-weight: bold;
-        }
-        
-        input,
-        textarea {
-            width: 100%;
-            padding: 0.8rem;
-            margin: 0.5rem 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        #map {
-            height: 400px;
-            margin-top: 2rem;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-        }
-        
-        .info-box {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: #f1f1f1;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-        }
-        
-        .info-box img {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .button-container {
-            margin-top: 1rem;
-        }
-        
-        .botao-localizar {
-            background-color: #0288d1;
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-right: 1rem;
-        }
-        
-        .botao-localizar:hover {
-            background-color: #0277bd;
-        }
-    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
+    <!-- 5) Seu CSS personalizado -->
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <header>
-        <h1>SOS Urgente</h1>
+    <!-- Cabeçalho com logo e navegação -->
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="assets/ambugo-logo.png" alt="AmbuGo" class="logo-img" />
+            <div class="logo-textos">
+                <h1 class="logo-title">AmbuGo</h1>
+                <p class="logo-tagline">Solução inovadora para emergências</p>
+            </div>
+        </div>
         <nav>
             <ul>
                 <li><a href="index.html">Início</a></li>
                 <li><a href="servicos.html">Serviços</a></li>
                 <li><a href="sobre.html">Sobre</a></li>
-                <li><a href="solicitar.html">Solicitar Ambulância</a></li>
+                <li><a href="solicitar.html">Chamar Ambulância</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- Conteúdo principal -->
     <main>
         <h2>Solicitar Ambulância</h2>
 
         <div class="info-box">
-            <img src="https://cdn-icons-png.flaticon.com/512/2961/2961957.png" alt="Ambulância">
-            <p>Use o botão abaixo para localizar sua posição e encontrar a ambulância mais próxima.</p>
+            <img src="https://cdn-icons-png.flaticon.com/512/2961/2961957.png" alt="Ambulância" />
+            <p>
+                Use o botão abaixo para localizar sua posição e encontrar a ambulância mais próxima.
+            </p>
         </div>
 
         <div class="button-container">
-            <button class="botao-localizar" onclick="atualizarLocalizacao()">📍 Atualizar Localização</button>
+            <button class="botao-localizar" onclick="atualizarLocalizacao()">
+        📍 Atualizar Localização
+      </button>
         </div>
 
         <form id="formSolicitacao">
             <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required>
+            <input type="text" id="nome" name="nome" required />
 
             <label for="telefone">Telefone:</label>
-            <input type="tel" id="telefone" name="telefone" required>
+            <input type="tel" id="telefone" name="telefone" required />
 
             <label for="localizacao">Localização:</label>
-            <input type="text" id="localizacao" name="localizacao" readonly>
+            <input type="text" id="localizacao" name="localizacao" readonly />
 
             <label for="observacoes">Observações:</label>
             <textarea id="observacoes" name="observacoes"></textarea>
@@ -117,15 +73,40 @@
             <button type="submit">Enviar Solicitação</button>
         </form>
 
+        <section id="perfil">
+            <h3>Ficha Médica</h3>
+            <form id="formPerfil">
+                <label>Alergias:</label>
+                <input type="text" id="alergias" placeholder="Digite suas alergias" />
+
+                <label>Condições Crônicas:</label>
+                <input type="text" id="cronicas" placeholder="Digite suas condições" />
+
+                <button type="button" id="salvarPerfil">Salvar Perfil</button>
+            </form>
+        </section>
+
+        <section id="chat" style="display: none;">
+            <h3>Chat de Emergência</h3>
+            <div id="chatWindow"></div>
+            <input type="text" id="chatInput" placeholder="Escreva aqui..." />
+            <button id="chatEnviar">Enviar</button>
+        </section>
+
         <div id="resultado"></div>
         <div id="map"></div>
     </main>
 
+    <!-- Rodapé -->
     <footer>
-        <p>&copy; 2025 SOS Urgente. Todos os direitos reservados.</p>
+        <p>&copy; 2025 AmbuGo. Todos os direitos reservados.</p>
     </footer>
 
+    <!-- 6) Scripts externos do Leaflet e Routing Machine -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <!-- 7) Seu JavaScript -->
     <script src="script.js"></script>
 </body>
 
