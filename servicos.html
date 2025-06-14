@@ -2,34 +2,52 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serviços</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AmbuGO – Serviços</title>
+    <!-- IMPORTANTE: style.css deve estar na mesma pasta deste HTML -->
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <header>
-        <h1>SOS Urgente</h1>
+
+    <!-- HEADER PADRONIZADO -->
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="assets/ambugo-logo.png" alt="AmbuGO" class="logo-img" />
+            <div class="logo-textos">
+                <span class="logo-title">AmbuGO</span>
+                <span class="logo-tagline">Emergência ao seu alcance</span>
+            </div>
+        </div>
         <nav>
             <ul>
                 <li><a href="index.html">Início</a></li>
-                <li><a href="servicos.html">Serviços</a></li>
+                <li><a href="servicos.html" class="active">Serviços</a></li>
                 <li><a href="sobre.html">Sobre</a></li>
                 <li><a href="solicitar.html">Solicitar Ambulância</a></li>
             </ul>
         </nav>
     </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
     <main>
-        <h2>Serviços</h2>
+        <h1>Serviços</h1>
         <ul>
-            <li>Localização em tempo real</li>
-            <li>Ambulâncias por tipo</li>
+            <li>Localização em tempo real da ambulância</li>
+            <li>Escolha de ambulâncias por tipo (UTI móvel, enfermaria etc.)</li>
+            <li>Rastreamento de status — a caminho, em atendimento, concluído</li>
+            <li>Alertas e notificações via SMS e e-mail</li>
         </ul>
     </main>
+
+    <!-- FOOTER PADRONIZADO -->
     <footer>
-        <p>&copy; 2025 SOS Urgente. Todos os direitos reservados.</p>
+        © 2025 AmbuGO. Todos os direitos reservados.
     </footer>
+
+    <!-- SE VOCÊ TIVER JS ESPECÍFICO -->
+    <script src="script.js"></script>
 </body>
 
 </html>

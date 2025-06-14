@@ -52,9 +52,14 @@ const io = new Server(httpServer, {+cors: { origin: '*' } +
 -
 const PORT = process.env.PORT || 3000; -
 app.listen(PORT, () => {
+<<<<<<< HEAD
     -console.log(`Servidor rodando na porta ${PORT}`); -
 }); +
 const PORT = process.env.PORT || 3000; +
 httpServer.listen(PORT, () => {
     +console.log(`Servidor rodando na porta ${PORT}`); +
 });
+=======
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
+>>>>>>> b0fddb04d9b84b9d4b632996cfbb0d62c4c150c5
