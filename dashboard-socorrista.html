@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AmbuGo – Painel Socorrista</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
 </head>
 
 <body>
@@ -14,10 +16,21 @@
     </header>
 
     <main class="dashboard">
-        <h2>Bem-vindo, Socorrista</h2>
+        <h2 id="boasVindas">Bem-vindo, Socorrista</h2>
         <p>Área exclusiva para visualização e gerenciamento de chamados.</p>
-        <!-- aqui depois você pode listar chamadas pendentes, etc. -->
+
+        <section id="callsSection">
+            <h3>Chamados Pendentes</h3>
+            <ul id="callsList">
+                <!-- será populado via JS -->
+            </ul>
+            <button id="btnLogout">Sair</button>
+        </section>
     </main>
+
+    <!-- Script de gerenciamento de chamados -->
+    <script src="script-dashboard-socorrista.js"></script>
+
 
     <footer>
         <p>&copy; 2025 AmbuGo. Todos os direitos reservados.</p>

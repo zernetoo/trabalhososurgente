@@ -60,6 +60,9 @@
         </div>
 
         <form id="formSolicitacao">
+            form.addEventListener('submit', e => { e.preventDefault(); if (!validarCPF(cpfVitEl.value.trim())) { showNotification('error', 'CPF inválido, tente novamente.'); cpfVitEl.focus(); return; } showNotification('success', 'Solicitação enviada com sucesso!');
+            - form.reset(); + form.reset(); + // dispara toda a lógica de localização / hospital / ambulância: + atualizarLocalizacao(); });
+
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required />
 
@@ -110,6 +113,14 @@
 
     <!-- 7) Seu JavaScript -->
     <script src="script.js"></script>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <form id="chat-form">
+            <input id="msg" autocomplete="off" placeholder="Digite sua mensagem" />
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
 </body>
 
 </html>

@@ -48,10 +48,28 @@
             <textarea id="observacoes" name="observacoes"></textarea>
 
             <div class="form-buttons">
-                <button type="button" class="botao-localizar" onclick="atualizarLocalizacao()">📍 Atualizar Localização</button>
+                <button type="button" class="botao-localizar">📍 Atualizar Localização</button>
                 <button type="submit">Enviar Solicitação</button>
             </div>
         </form>
+
+        <!-- Perfil Médico -->
+        <section id="perfil">
+            <h3>Ficha Médica</h3>
+            <label for="alergias">Alergias:</label>
+            <input type="text" id="alergias" placeholder="Digite suas alergias" />
+            <label for="cronicas">Condições Crônicas:</label>
+            <input type="text" id="cronicas" placeholder="Digite suas condições" />
+            <button type="button" id="salvarPerfil">Salvar Perfil</button>
+        </section>
+
+        <!-- Chat de Emergência -->
+        <section id="chat" style="display: none;">
+            <h3>Chat de Emergência</h3>
+            <div id="chatWindow"></div>
+            <input type="text" id="chatInput" placeholder="Escreva aqui..." />
+            <button type="button" id="chatEnviar">Enviar</button>
+        </section>
 
         <div id="resultado"></div>
         <div id="map"></div>

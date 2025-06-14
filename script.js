@@ -1,4 +1,5 @@
 // script.js - Funções visuais, perfil, chat, mapa e roteamento
+
 // Injeta estilos para notificações e loader
 (() => {
     const style = document.createElement('style');
@@ -44,7 +45,6 @@ function validarCPF(cpf) {
     return calc(9) === Number(cpf[9]) && calc(10) === Number(cpf[10]);
 }
 
-// Código principal após DOM carregar
 document.addEventListener('DOMContentLoaded', () => {
     // --- Utilitários ---
     function showNotification(type, message) {
@@ -57,10 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoader() {
-        const loader = document.createElement('div');
-        loader.className = 'loader';
-        loader.id = 'global-loader';
-        document.body.appendChild(loader);
+        if (!document.getElementById('global-loader')) {
+            const loader = document.createElement('div');
+            loader.className = 'loader';
+            loader.id = 'global-loader';
+            document.body.appendChild(loader);
+        }
     }
 
     function hideLoader() {
@@ -77,17 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     const chatBtn = document.getElementById('chatEnviar');
-    if (chatBtn) chatBtn.addEventListener('click', () => {
-        const input = document.getElementById('chatInput');
-        const txt = input.value.trim();
-        if (!txt) return;
-        const chatWindow = document.getElementById('chatWindow');
-        const p = document.createElement('p');
-        p.textContent = `Você: ${txt}`;
-        chatWindow.appendChild(p);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-        input.value = '';
-    });
+    if (chatBtn) {
+        chatBtn.addEventListener('click', () => {
+            const input = document.getElementById('chatInput');
+            const txt = input.value.trim();
+            if (!txt) return;
+            const chatWindow = document.getElementById('chatWindow');
+            const p = document.createElement('p');
+            p.textContent = `Você: ${txt}`;
+            chatWindow.appendChild(p);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            input.value = '';
+        });
+    }
 
     // --- Perfil Médico ---
     const perfil = JSON.parse(localStorage.getItem('ambulogo_perfil')) || {};
@@ -96,21 +100,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (alerg) alerg.value = perfil.alergias || '';
     if (cron) cron.value = perfil.cronicas || '';
     const salvarPerfil = document.getElementById('salvarPerfil');
-    if (salvarPerfil) salvarPerfil.addEventListener('click', () => {
-        const p = { alergias: alerg.value, cronicas: cron.value };
-        localStorage.setItem('ambulogo_perfil', JSON.stringify(p));
-        showNotification('success', 'Perfil médico salvo com sucesso!');
-    });
+    if (salvarPerfil) {
+        salvarPerfil.addEventListener('click', () => {
+            const p = { alergias: alerg.value, cronicas: cron.value };
+            localStorage.setItem('ambulogo_perfil', JSON.stringify(p));
+            showNotification('success', 'Perfil médico salvo com sucesso!');
+        });
+    }
 
     // --- Formulário Vítima ---
     const form = document.getElementById('formSolicitacao');
     const cpfVitEl = document.getElementById('cpfVitima');
-    if (form) {
+    if (form && cpfVitEl) {
         form.addEventListener('submit', e => {
             e.preventDefault();
-            // valida CPF vítima
             if (!validarCPF(cpfVitEl.value.trim())) {
-                showNotification('error', 'Informações incorretas, tente novamente.');
+                showNotification('error', 'CPF inválido, tente novamente.');
                 cpfVitEl.focus();
                 return;
             }
@@ -119,83 +124,168 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Mapa e API ---
+    // --- Mapa, Hospital Próximo, Disparo e Simulação ---
     const localizacaoInput = document.getElementById('localizacao');
     const resultadoDiv = document.getElementById('resultado');
-    let map, userMarker, ambulanceMarker;
+    let map, userMarker, ambulanceMarker, simulationInterval = null;
 
     function inicializarMapa(lat, lng) {
         map = L.map('map').setView([lat, lng], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
-        userMarker = L.marker([lat, lng]).addTo(map).bindPopup('📍 Sua localização').openPopup();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        userMarker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup('📍 Você está aqui')
+            .openPopup();
     }
 
-    function calcularDistancia(c1, c2) {
-        const toRad = v => (v * Math.PI) / 180;
-        const R = 6371;
-        const dLat = toRad(c2.latitude - c1.latitude);
-        const dLon = toRad(c2.longitude - c1.longitude);
-        const lat1 = toRad(c1.latitude);
-        const lat2 = toRad(c2.latitude);
-        const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    async function buscarHospitalProximo(coords) {
+        showLoader();
+        try {
+            const res = await fetch(`http://localhost:3000/hospital-proximo?lat=${coords.latitude}&lng=${coords.longitude}`);
+            const hosp = await res.json();
+            hideLoader();
+            if (!hosp || !hosp.id) {
+                showNotification('error', 'Nenhum hospital encontrado.');
+                return null;
+            }
+            return hosp;
+        } catch {
+            hideLoader();
+            showNotification('error', 'Erro ao buscar hospital.');
+            return null;
+        }
+    }
+
+    async function dispararAmbulancia(hospitalId, destino) {
+        showLoader();
+        try {
+            const res = await fetch(
+                `http://localhost:3000/disparar-ambulancia?hospitalId=${hospitalId}` +
+                `&toLat=${destino.latitude}&toLng=${destino.longitude}`, { method: 'POST' }
+            );
+            const amb = await res.json();
+            hideLoader();
+            return amb;
+        } catch {
+            hideLoader();
+            showNotification('error', 'Erro ao disparar ambulância.');
+            return null;
+        }
+    }
+
+    function simularTrajeto(origem, destino, ambNome) {
+        if (simulationInterval) clearInterval(simulationInterval);
+        if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+
+        ambulanceMarker = L.marker([origem.latitude, origem.longitude], {
+                icon: L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2961/2961957.png',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 36],
+                    popupAnchor: [0, -30]
+                })
+            })
+            .addTo(map)
+            .bindPopup(`🚑 ${ambNome}`)
+            .openPopup();
+
+        const steps = 100;
+        let step = 0;
+        const deltaLat = (destino.latitude - origem.latitude) / steps;
+        const deltaLng = (destino.longitude - origem.longitude) / steps;
+
+        simulationInterval = setInterval(() => {
+            step++;
+            const lat = origem.latitude + deltaLat * step;
+            const lng = origem.longitude + deltaLng * step;
+            ambulanceMarker.setLatLng([lat, lng]);
+            ambulanceMarker.getPopup().setContent(`🚑 ${ambNome}<br>Chegando em você`);
+            if (step >= steps) {
+                clearInterval(simulationInterval);
+                showNotification('success', 'Ambulância chegou ao local!');
+            }
+        }, 500);
     }
 
     function atualizarLocalizacao() {
         showNotification('info', 'Obtendo localização...');
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-                localizacaoInput.value = `${coords.latitude}, ${coords.longitude}`;
-                if (!map) inicializarMapa(coords.latitude, coords.longitude);
-                else {
-                    map.setView([coords.latitude, coords.longitude], 14);
-                    userMarker.setLatLng([coords.latitude, coords.longitude]);
-                }
-                buscarAmbulanciaProxima(coords);
-            }, () => {
-                showNotification('error', 'Erro ao obter localização.');
-                localizacaoInput.value = 'Erro ao obter localização';
-            });
-        } else {
+        if (!navigator.geolocation) {
             showNotification('error', 'Geolocalização não suportada.');
-            localizacaoInput.value = 'Não suportado';
+            return;
         }
-    }
-    async function buscarAmbulanciaProxima(coords) {
-        showLoader();
-        showNotification('info', 'Buscando ambulância mais próxima...');
-        try {
-            const res = await fetch(`http://localhost:3000/ambulancia-proxima?lat=${coords.latitude}&lng=${coords.longitude}`);
-            const amb = await res.json();
-            hideLoader();
-            if (amb && amb.nome) {
-                const tempo = (amb.distancia / 40 * 60).toFixed(1);
-                resultadoDiv.innerHTML = `
-          <p><span>🚑 Ambulância:</span> ${amb.nome}</p>
-          <p><span>📏 Distância:</span> ${amb.distancia.toFixed(2)} km</p>
-          <p><span>⏱️ Tempo estimado:</span> ${tempo} min</p>
-        `;
-                resultadoDiv.style.display = 'block';
-                showNotification('success', `Ambulância ${amb.nome} encontrada!`);
-                habilitarChat();
-                if (ambulanceMarker) map.removeLayer(ambulanceMarker);
-                ambulanceMarker = L.marker([amb.latitude, amb.longitude], { icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/2961/2961957.png', iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -30] }) }).addTo(map).bindPopup(`🚑 ${amb.nome}`).openPopup();
-                // Hospital e rota omitidos para brevidade
-            } else {
-                resultadoDiv.innerHTML = `<p><strong>❌ Nenhuma ambulância disponível.</strong></p>`;
-                resultadoDiv.style.display = 'block';
-                showNotification('error', 'Sem ambulâncias disponíveis.');
+        navigator.geolocation.getCurrentPosition(async pos => {
+            const coords = {
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude
+            };
+            localizacaoInput.value = `${coords.latitude}, ${coords.longitude}`;
+
+            if (!map) inicializarMapa(coords.latitude, coords.longitude);
+            else {
+                map.setView([coords.latitude, coords.longitude], 14);
+                userMarker.setLatLng([coords.latitude, coords.longitude]);
             }
-        } catch (err) {
-            hideLoader();
-            console.error(err);
-            showNotification('error', 'Erro ao buscar ambulância.');
-        }
+
+            // 1) Hospital mais próximo
+            const hosp = await buscarHospitalProximo(coords);
+            if (!hosp) return;
+            showNotification('success', `Hospital mais próximo: ${hosp.nome}`);
+
+            // 2) Dispara ambulância
+            const amb = await dispararAmbulancia(hosp.id, coords);
+            if (!amb) return;
+            showNotification('success', `Ambulância ${amb.nome} a caminho!`);
+
+            // 3) Simula trajeto
+            simularTrajeto({ latitude: hosp.latitude, longitude: hosp.longitude }, { latitude: coords.latitude, longitude: coords.longitude },
+                amb.nome
+            );
+        }, () => {
+            showNotification('error', 'Erro ao obter localização.');
+        });
     }
 
     // Inicialização
     atualizarLocalizacao();
     const btnLoc = document.querySelector('.botao-localizar');
     if (btnLoc) btnLoc.addEventListener('click', atualizarLocalizacao);
+    // ———————————————
+    // Chamados de vítimas
+    // ———————————————
+    document.addEventListener('DOMContentLoaded', () => {
+        const callsKey = 'ambuGo_calls';
+        const btnCall = document.getElementById('btnOpenCall');
+
+        if (btnCall) {
+            btnCall.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    return showNotification('info', 'Geolocalização não suportada pelo seu navegador.');
+                }
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const user = JSON.parse(localStorage.getItem('ambuGo_user'));
+                    if (!user) {
+                        return showNotification('info', 'Faça login antes de chamar uma ambulância.');
+                    }
+                    const calls = JSON.parse(localStorage.getItem(callsKey) || '[]');
+                    const newCall = {
+                        id: `call_${Date.now()}`,
+                        nome: user.nome,
+                        cpf: user.cpf,
+                        lat: pos.coords.latitude,
+                        lon: pos.coords.longitude,
+                        timestamp: new Date().toISOString(),
+                        status: 'pending'
+                    };
+                    calls.push(newCall);
+                    localStorage.setItem(callsKey, JSON.stringify(calls));
+                    showNotification('success', 'Chamado enviado com sucesso!');
+                }, err => {
+                    showNotification('info', 'Não foi possível obter a localização: ' + err.message);
+                });
+            });
+        }
+    });
+
 });
